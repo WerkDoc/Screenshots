@@ -75,11 +75,12 @@ h2{font-size:20px;margin:0;line-height:1.2}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 #sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:5}
 .sheetIn{width:100%;background:var(--card);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:grid;gap:10px}
-#txt{width:100%;min-height:50px;font-size:17px!important;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:17px -apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+#txt{width:100%;min-height:50px;font-size:18px!important;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:17px -apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 .sheetBtns{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}
 #txtDel{color:#ff3b30}
 #auto{margin-bottom:4px;min-height:46px;font-size:16px}
 #autoHint{margin:6px 2px 12px;font-size:13px}
+.ver{text-align:center;color:var(--sub);font-size:13px;margin:4px 0 0}
 .busy{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;z-index:6;background:rgba(0,0,0,.35);color:#fff;font-weight:600;font-size:17px}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
 @media(max-width:380px){.right .seg{width:126px}}
@@ -153,6 +154,7 @@ h2{font-size:20px;margin:0;line-height:1.2}
     <div class="stage" id="stage"><canvas id="cv"></canvas></div>
     <div id="fallback" hidden><p class="hint">Bild lange drücken → „Zu Fotos hinzufügen“ oder „Kopieren“.</p><img alt="Fertiges Bild"></div>
   </section>
+  <p class="ver">Version 5 · 20.11.2026</p>
 </main>
 
 <div class="dock" id="dock" hidden>
@@ -406,7 +408,9 @@ $('#cropOk').addEventListener('click',()=>{
   push();S.base=c;S.ops=[];setTool('view');toast('Zugeschnitten');
 });
 
-const closeSheet=()=>{$('#sheet').hidden=true;$('#txt').blur();S.edit=null};
+const vp=document.querySelector('meta[name=viewport]'),VP=vp.content;
+const resetZoom=()=>{vp.content=VP.replace('initial-scale=1','initial-scale=1.0001');requestAnimationFrame(()=>{vp.content=VP;window.scrollTo(window.scrollX&&0,window.scrollY)})};
+const closeSheet=()=>{$('#sheet').hidden=true;$('#txt').blur();S.edit=null;setTimeout(resetZoom,150)};
 function openSheet(op){
   S.edit=op;$('#txt').value=op?op.s:'';$('#txtDel').hidden=!op;$('#txtOk').textContent=op?'Übernehmen':'Einfügen';
   $('#sheet').hidden=false;setTimeout(()=>$('#txt').focus(),50);
