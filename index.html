@@ -73,7 +73,13 @@ h2{font-size:20px;margin:0;line-height:1.2}
 #fallback img{width:100%;border-radius:10px;display:block;-webkit-touch-callout:default}
 #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;background:light-dark(#1c1c1e,#f5f5f7);color:light-dark(#fff,#111);padding:12px 16px;border-radius:12px;font-size:15px;max-width:calc(100% - 32px);transition:.25s;pointer-events:none;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-.busy{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35);color:#fff;font-weight:600;font-size:17px}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:5}
+.sheetIn{width:100%;background:var(--card);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:grid;gap:10px}
+#txt{width:100%;min-height:50px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:17px inherit;background:var(--bg);color:var(--ink)}
+.sheetBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#auto{margin-bottom:4px;min-height:46px;font-size:16px}
+#autoHint{margin:6px 2px 12px;font-size:13px}
+.busy{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;z-index:6;background:rgba(0,0,0,.35);color:#fff;font-weight:600;font-size:17px}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
 @media(max-width:380px){.right .seg{width:126px}}
 </style>
@@ -131,7 +137,10 @@ h2{font-size:20px;margin:0;line-height:1.2}
       <button class="tool" data-t="rect" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/></svg>Rahmen</button>
       <button class="tool" data-t="num" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10.5 9 12.5 8v8"/></svg>Nummer</button>
       <button class="tool" data-t="blur" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zM15 4h5v5h-5zM9.5 9.5h5v5h-5zM4 15h5v5H4zM15 15h5v5h-5z"/></svg>Verpixeln</button>
+      <button class="tool" data-t="text" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg>Text</button>
     </div>
+    <button class="btn" id="auto">Kundendaten automatisch verpixeln</button>
+    <p class="hint" id="autoHint">Sucht IMEI-Nummern, Telefonnummern und E-Mail-Adressen und verpixelt sie. Danach bitte kurz prüfen – Namen und Adressen erkennt es nicht.</p>
     <div class="row2">
       <div id="colors"></div>
       <div class="right">
@@ -152,6 +161,7 @@ h2{font-size:20px;margin:0;line-height:1.2}
     <button class="btn primary" id="save">Speichern</button>
   </div>
 </div>
+<div id="sheet" hidden><div class="sheetIn"><input id="txt" type="text" placeholder="Text eingeben" enterkeyhint="done" autocomplete="off"><div class="sheetBtns"><button class="btn" id="txtNo">Abbrechen</button><button class="btn primary" id="txtOk">Einfügen</button></div></div></div>
 <div id="toast" role="status"></div>
 
 <script>
@@ -287,6 +297,12 @@ function drawOp(x,op){
     const R=op.w*3.4;x.beginPath();x.arc(op.a.x,op.a.y,R,0,7);x.fill();
     x.fillStyle=op.c==='#ffcc00'?'#111':'#fff';x.font=`700 ${R*1.25}px -apple-system,system-ui,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText(op.n,op.a.x,op.a.y+R*.05);
   }
+  else if(op.t==='text'){
+    const fs=op.w*4.2,pad=fs*.35;x.font=`700 ${fs}px -apple-system,system-ui,sans-serif`;x.textBaseline='middle';
+    const tw=x.measureText(op.s).width,dark=op.c==='#ffcc00';
+    x.fillStyle=dark?'rgba(17,17,17,.88)':'rgba(255,255,255,.92)';x.beginPath();x.roundRect(op.a.x-pad,op.a.y-fs*.5-pad,tw+pad*2,fs+pad*2,pad);x.fill();
+    x.fillStyle=op.c;x.fillText(op.s,op.a.x,op.a.y);
+  }
   else if(op.t==='blur'){
     const r=nrm(op.a,op.b);if(r.w<2||r.h<2){x.restore();return}
     const bl=Math.max(8,Math.round(S.base.width/55)),t=mk(Math.max(1,Math.ceil(r.w/bl)),Math.max(1,Math.ceil(r.h/bl)));
@@ -329,6 +345,7 @@ const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.w
 cv.addEventListener('pointerdown',e=>{
   if(S.tool==='view'||!S.base)return;e.preventDefault();cv.setPointerCapture(e.pointerId);const p=pt(e);
   if(S.tool==='crop'){S.crop={a:p,b:p};S.dragging=true}
+  else if(S.tool==='text'){S.txtPos=p;$('#txt').value='';$('#sheet').hidden=false;setTimeout(()=>$('#txt').focus(),50)}
   else if(S.tool==='num'){push();S.ops.push({t:'num',c:S.color,w:lw(),a:p,n:S.num++})}
   else if(S.tool==='pen')S.cur={t:'pen',c:S.color,w:lw(),pts:[p]};
   else S.cur={t:S.tool,c:S.color,w:lw(),a:p,b:p};
@@ -353,6 +370,59 @@ $('#cropOk').addEventListener('click',()=>{
   if(w<20||h<20){toast('Bereich ist zu klein');return}
   const f=flat(),c=mk(w,h);c.getContext('2d').drawImage(f,x,y,w,h,0,0,w,h);
   push();S.base=c;S.ops=[];setTool('view');toast('Zugeschnitten');
+});
+
+const closeSheet=()=>{$('#sheet').hidden=true;$('#txt').blur()};
+$('#txtNo').addEventListener('click',closeSheet);
+const addText=()=>{const v=$('#txt').value.trim();closeSheet();if(!v||!S.txtPos)return;push();S.ops.push({t:'text',c:S.color,w:lw(),a:S.txtPos,s:v});render()};
+$('#txtOk').addEventListener('click',addText);
+$('#txt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addText()}});
+
+/* ---------- Kundendaten automatisch verpixeln (Texterkennung) ---------- */
+let ocrLib=null;
+const loadOcr=()=>ocrLib||(ocrLib=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';sc.onload=()=>res(window.Tesseract);sc.onerror=()=>{ocrLib=null;rej(new Error('load'))};document.head.append(sc)}));
+const PATTERNS=[
+  /(?:\d[ \-]?){14}\d/g,                                   // IMEI (15 Ziffern)
+  /(?:\+|00)\d{2}[ \/\-]?\(?0?\)?\d{2,5}[ \/\-]?\d{3,}(?:[ \-]?\d+)*/g, // +49 …
+  /\b0\d{2,5}[ \/\-]?\d{3,}(?:[ \-]?\d+)*/g,                // 0171 … / 07181 …
+  /[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+/g                         // E-Mail
+];
+function findBoxes(data){
+  const boxes=[];
+  for(const line of data.lines||[]){
+    let txt='',map=[];
+    line.words.forEach((w,i)=>{if(i){txt+=' ';map.push(-1)}for(const ch of w.text){txt+=ch;map.push(i)}});
+    for(const re of PATTERNS){
+      re.lastIndex=0;let m;
+      while((m=re.exec(txt))){
+        const digits=m[0].replace(/\D/g,'').length;
+        if(!m[0].includes('@')&&digits<9)continue;
+        const ids=new Set();for(let k=m.index;k<m.index+m[0].length;k++)if(map[k]>=0)ids.add(map[k]);
+        let x0=1e9,y0=1e9,x1=-1,y1=-1;
+        ids.forEach(i=>{const b=line.words[i].bbox;x0=Math.min(x0,b.x0);y0=Math.min(y0,b.y0);x1=Math.max(x1,b.x1);y1=Math.max(y1,b.y1)});
+        if(x1>x0)boxes.push({x0,y0,x1,y1});
+      }
+    }
+  }
+  return boxes;
+}
+$('#auto').addEventListener('click',async()=>{
+  if(!S.base)return;
+  const ov=document.createElement('div');ov.className='busy';ov.textContent='Texterkennung wird geladen …';document.body.append(ov);
+  let worker=null;
+  try{
+    const T=await loadOcr();
+    worker=await T.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')ov.textContent=`Text wird gelesen … ${Math.round(m.progress*100)} %`}});
+    const {data}=await worker.recognize(flat());
+    const boxes=findBoxes(data),pad=Math.round(S.base.width/120);
+    if(!boxes.length){toast('Keine IMEI, Telefonnummer oder E-Mail gefunden');}
+    else{
+      push();
+      for(const b of boxes)S.ops.push({t:'blur',a:{x:b.x0-pad,y:b.y0-pad},b:{x:b.x1+pad,y:b.y1+pad}});
+      render();toast(`${boxes.length} ${boxes.length===1?'Stelle':'Stellen'} verpixelt – bitte kurz prüfen`);
+    }
+  }catch(err){toast('Texterkennung geht gerade nicht – Internet nötig. Nutze „Verpixeln“ von Hand.')}
+  finally{if(worker)worker.terminate().catch(()=>{});ov.remove()}
 });
 
 /* ---------- Speichern & Kopieren ---------- */
