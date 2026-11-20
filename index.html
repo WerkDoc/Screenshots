@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,7 +23,7 @@
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+body{margin:0;touch-action:manipulation;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
 .top{padding:calc(28px + env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) 6px max(18px,env(safe-area-inset-left));max-width:720px;margin:0 auto}
 h1{font-size:34px;line-height:1.05;margin:0 0 6px;letter-spacing:-.02em;text-wrap:balance}
 .top p{margin:0;color:var(--sub)}
@@ -33,7 +33,7 @@ main{max-width:720px;margin:0 auto;padding:10px 12px 130px;display:grid;gap:14px
 h2{font-size:20px;margin:0;line-height:1.2}
 .sub{color:var(--sub);font-size:14px}
 .hint{color:var(--sub);font-size:14px;margin:10px 2px 14px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;width:100%;border:0;border-radius:14px;font:600 17px/1 inherit;background:var(--fill);color:var(--ink);cursor:pointer;padding:0 16px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;width:100%;border:0;border-radius:14px;font:600 17px/1 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--fill);color:var(--ink);cursor:pointer;padding:0 16px}
 .btn.primary{background:var(--acc);color:var(--accInk)}
 .btn:disabled{opacity:.4}
 .btn:focus-visible,.seg button:focus-visible,.tool:focus-visible,.mini:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
@@ -44,15 +44,15 @@ h2{font-size:20px;margin:0;line-height:1.2}
 #list img{width:52px;height:84px;object-fit:cover;object-position:top;border-radius:7px;background:var(--line)}
 #list b{display:block;font-size:16px}#list span{font-size:13px;color:var(--sub)}
 .acts{display:flex;gap:4px}
-.mini{width:44px;height:44px;border:0;border-radius:10px;background:var(--card);color:var(--ink);font:600 18px/1 inherit;cursor:pointer}
+.mini{width:44px;height:44px;border:0;border-radius:10px;background:var(--card);color:var(--ink);font:600 18px/1 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;cursor:pointer}
 .mini:disabled{opacity:.3}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--fill);border-radius:12px;padding:3px;gap:3px}
-.seg button{min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:500 15px/1.15 inherit;cursor:pointer;padding:4px}
+.seg button{min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:500 15px/1.15 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;cursor:pointer;padding:4px}
 .seg button[aria-pressed=true]{background:var(--card);font-weight:650;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 #info{margin:12px 2px 0;font-size:14px;color:var(--sub)}
 #info.warn{color:light-dark(#b3361a,#ff8a65)}
 .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}
-.tool{display:grid;justify-items:center;gap:2px;padding:7px 0 5px;border:0;border-radius:11px;background:var(--fill);color:var(--ink);font:500 13px/1.1 inherit;cursor:pointer;min-height:56px}
+.tool{display:grid;justify-items:center;gap:2px;padding:7px 0 5px;border:0;border-radius:11px;background:var(--fill);color:var(--ink);font:500 13px/1.1 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;cursor:pointer;min-height:56px}
 .tool svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tool[aria-pressed=true]{background:var(--acc);color:var(--accInk)}
 .row2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -75,7 +75,7 @@ h2{font-size:20px;margin:0;line-height:1.2}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 #sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:5}
 .sheetIn{width:100%;background:var(--card);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:grid;gap:10px}
-#txt{width:100%;min-height:50px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:17px inherit;background:var(--bg);color:var(--ink)}
+#txt{width:100%;min-height:50px;font-size:17px!important;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:17px -apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 .sheetBtns{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}
 #txtDel{color:#ff3b30}
 #auto{margin-bottom:4px;min-height:46px;font-size:16px}
@@ -352,7 +352,6 @@ $('#zoom').addEventListener('click',e=>{const b=e.target.closest('button');if(b)
 let gz=1;
 stage.addEventListener('gesturestart',e=>{e.preventDefault();gz=S.zoom},{passive:false});
 stage.addEventListener('gesturechange',e=>{e.preventDefault();setZoom(gz*e.scale)},{passive:false});
-document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 $('#undo').addEventListener('click',()=>{const h=S.hist.pop();if(!h)return;S.base=h.base;S.ops=h.ops;S.num=h.num;render()});
 
 const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height}};
