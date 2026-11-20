@@ -1,5 +1,5 @@
 // Netz zuerst, damit Updates nach dem Merge sofort ankommen; Cache nur als Offline-Reserve.
-const CACHE = 'screenshot-studio-v2';
+const CACHE = 'screenshot-studio-v3';
 const FILES = ['./', './index.html', './manifest.json', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
